@@ -128,8 +128,23 @@ void GPSProcessor::processGPSData() {
         // Toggle LED for valid GPS
         ledController_.toggle();
 
-        // Update stepper motors
-        timeDisplay_.updateTime(timeData);
+        // For demo mode, drive the mechanical display as a countdown to 13:00 local time.
+        TimeData mechanicalTimeData = timeData;
+        const int targetSeconds = 13 * 3600;
+        const int currentLocalSeconds = (localHours * 3600) + (utcMinutes * 60) + utcSeconds;
+        int remainingSeconds = targetSeconds - currentLocalSeconds;
+
+        // After 13:00, count down to the next day's 13:00.
+        if (remainingSeconds < 0) {
+            remainingSeconds += 24 * 3600;
+        }
+
+        mechanicalTimeData.localHours = remainingSeconds / 3600;
+        mechanicalTimeData.localMinutes = (remainingSeconds % 3600) / 60;
+        mechanicalTimeData.localSeconds = remainingSeconds % 60;
+
+        // Update stepper motors with countdown values; TFT keeps normal clock display.
+        timeDisplay_.updateTime(mechanicalTimeData);
         displayController_.updateTime(timeData);
     }
     

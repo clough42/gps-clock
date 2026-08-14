@@ -65,12 +65,12 @@ bool MechanicalDisplay::runMotors() {
     if(rp2040.fifo.available()) {
         // Decode and update the motors
         uint32_t timeDataInt = rp2040.fifo.pop();
-        hoursTens_.moveToDigit(timeDataInt   / 100000 % 10);
-        hoursOnes_.moveToDigit(timeDataInt   / 10000 % 10);
-        minutesTens_.moveToDigit(timeDataInt / 1000 % 10);
-        minutesOnes_.moveToDigit(timeDataInt / 100 % 10);
-        secondsTens_.moveToDigit(timeDataInt / 10 % 10);
-        secondsOnes_.moveToDigit(timeDataInt % 10);
+        hoursTens_.moveToDigitBackward(timeDataInt   / 100000 % 10);
+        hoursOnes_.moveToDigitBackward(timeDataInt   / 10000 % 10);
+        minutesTens_.moveToDigitBackward(timeDataInt / 1000 % 10);
+        minutesOnes_.moveToDigitBackward(timeDataInt / 100 % 10);
+        secondsTens_.moveToDigitBackward(timeDataInt / 10 % 10);
+        secondsOnes_.moveToDigitBackward(timeDataInt % 10);
     }
 
     digitalWrite(debugPin_, HIGH);  // Start timing measurement

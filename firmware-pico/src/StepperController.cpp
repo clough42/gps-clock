@@ -79,6 +79,28 @@ void StepperController::moveToDigit(int targetDigit) {
     targetDigit_ = targetDigit;
 }
 
+void StepperController::moveToDigitBackward(int targetDigit) {
+    // sanity check to avoig big ugly moves if something goes terribly wrong
+    if (targetDigit < MIN_DIGIT || targetDigit > MAX_DIGIT) return;
+
+    // drop out if already at target
+    if (targetDigit == targetDigit_) return;
+
+    // reset step count if stationary to avoid step count overflow over long runtimes
+    resetStepCountIfStationary();
+
+    // use current target digit to figure how far to move (backward only)
+    int backwardDigits = (targetDigit_ - targetDigit);
+    if (backwardDigits < 0) backwardDigits += DIGITS_PER_WHEEL;
+
+    // calculate new step target and command move
+    long newStepTarget = motor_.targetPosition() - (backwardDigits * stepsPerPosition_);
+    motor_.moveTo(newStepTarget);
+
+    // remember where we are going
+    targetDigit_ = targetDigit;
+}
+
 bool StepperController::run() {
     motor_.run();
     return motor_.distanceToGo() != 0;
